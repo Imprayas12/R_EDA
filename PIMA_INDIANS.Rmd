@@ -58,6 +58,12 @@ head(final_data["faa"],20)
 #introduce(final_data)
 plot_intro(final_data)
 ```
+```{r}
+plot_missing(final_data)
+```
+```{r}
+plot_bar(final_data)
+```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
