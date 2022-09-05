@@ -99,7 +99,20 @@ plot_qq(qq_data,by="name_origin",sampled_rows = 1000L)
 plot_correlation(na.omit(final_data),maxcat = 5L,type = "d")
 ```
 ```{r}
+boxplot(final_data['arr_delay'])
+```
+```{r}
+create_report(final_data)
+```
 
+
+```{r}
+#head(final_data)
+
+arr_delay_df <- final_data[,c("arr_delay","year_planes","month","distance","seats")]
+```
+```{r}
+plot_boxplot(arr_delay_df,by = "arr_delay")
 ```
 
 
