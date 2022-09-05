@@ -65,6 +65,44 @@ plot_missing(final_data)
 plot_bar(final_data)
 ```
 
+
+
+```{r}  
+plot_histogram(final_data)
+```
+```{r}
+final_data <- update_columns(final_data,"flight",as.factor)
+head(final_data)
+#final_data <- drop_columns(final_data,c("tz_origin"))
+```
+```{r}
+#Q-Q plot is a way to visualize the deviation from a specific probability distribution.
+
+qq_data <- final_data[,c("arr_delay","air_time","distance","seats")]
+#plot_qq(qq_data,sampled_rows = 100L)
+```
+
+```{r}
+plot_qq(qq_data,sampled_rows = 100L)
+```
+```{r}
+log_qq_data <- update_columns(qq_data,2:4,function(x)log(x+1))
+plot_qq(log_qq_data[,2:4],sampled_rows = 100L)
+```
+```{r}
+qq_data <- final_data[,c("name_origin","arr_delay","air_time","distance","seats")]
+```
+```{r}
+plot_qq(qq_data,by="name_origin",sampled_rows = 1000L)
+```
+```{r}
+plot_correlation(na.omit(final_data),maxcat = 5L,type = "d")
+```
+```{r}
+
+```
+
+
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
