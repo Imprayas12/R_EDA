@@ -1,0 +1,109 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#install.packages("rlang")
+
+```
+```{r}
+library(rsample)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r}
+#install.packages('dplyr')
+```
+```{r}
+#install.packages('caret')
+```
+```{r}
+library(rsample)
+library(caret)
+library(ggplot2)
+library(dplyr)
+```
+```{r}
+#install.packages('tidyverse')
+```
+```{r}
+library(tidyverse)
+```
+```{r}
+data <- read.csv(file.choose(),header = TRUE,sep = ",")
+```
+
+```{r}
+head(data)
+```
+```{r}
+library(dplyr)
+data <- data %>% 
+  mutate(
+    JobLevel = factor(JobLevel), 
+    StockOptionLevel = factor(StockOptionLevel), 
+    TrainingTimesLastYear = factor(TrainingTimesLastYear)
+    )
+```
+```{r}
+head(data)
+```
+```{r}
+library(tidymodels)
+set.seed(123)
+split <- initial_split(data,prop = 0.7, strata = "Attrition")
+train <- training(split)
+test <- testing(split)
+```
+```{r}
+table(train $ Attrition) %>% prop.table()
+```
+```{r}
+table(test $ Attrition) %>% prop.table()
+```
+```{r}
+library(corrplot)
+train %>%
+  filter(Attrition == "Yes")  %>%
+  select_if(is.numeric) %>%
+  cor() %>%
+  corrplot::corrplot()
+```
+```{r}
+train %>%
+  select(Age,DailyRate,DistanceFromHome,HourlyRate,MonthlyIncome,MonthlyRate) %>%
+  gather(Metric,value) %>%
+  ggplot(aes(value,fill = Metric)) +
+  geom_density(show.legend = FALSE) +
+  facet_wrap(~Metric,scales = "free")
+```
+```{r}
+features <- setdiff(names(train),"Attrition")
+x <- train [,features]
+y <- train $ Attrition
+```
+```{r}
+train_control <- trainControl(
+  method = "CV",
+  number = 10
+)
+```
+```{r}
+nb_m1 <- train(
+  x = x,
+  y = y,
+  method = "nb",
+  trControl = train_control
+)
+
+confusionMatrix(nb_m1)
+```
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
