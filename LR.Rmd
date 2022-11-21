@@ -1,0 +1,98 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+head(cars)
+```
+```{r}
+speed <- cars['speed']
+dist <- cars['dist']
+```
+```{r}
+scatter.smooth(x = cars $speed, y = cars $dist, main = "Dist v/s Speed")
+```
+
+
+```{r}
+boxplot(cars $ speed, main = "Speed",sub = paste("Outlier rows:"))
+```
+```{r}
+boxplot(cars $ dist, main = "Dist",sub = paste("Outlier rows:"))
+```
+```{r}
+par(mfrow = (1,2))
+boxplot(cars $ speed, main = "Speed", sub = paste("Outlier rows:"),boxplot.stats(cars$speed)$out)
+boxplot(cars $ dist, main = "Dist", sub = paste("Outlier rows:"),boxplot.stats(cars$dist)$out)
+```
+```{r}
+boxplot(cars $ dist, main = "Dist", sub = paste("Outlier rows:"),boxplot.stats(cars$dist)$out)
+```
+```{r}
+install.packages('e1071')
+```
+```{r}
+library(e1071) #for skewness
+```
+```{r}
+par(mfrow = c(1,2))
+plot(density(cars$speed),main = "Density plot : Speed", ylab = "frequency",sub = paste("Skewness: ", round(e1071::skewness(cars $speed))))
+plot(density(cars$dist),main = "Density plot : Dist", ylab = "frequency",sub = paste("Skewness: ", round(e1071::skewness(cars $dist))))
+```
+```{r}
+cor(cars$speed,cars$dist)
+```
+```{r}
+linearModel <- lm(dist~speed,data = cars)
+print(linearModel)
+```
+```{r}
+#dist = -17.579 + 3.932 X speed
+```
+```{r}
+summary(linearModel)
+```
+```{r}
+# T-value -> A larger T value indicates that it is likely that coefficient is != 0 purely by chance.
+# if Pr > |t| is low then it means that if |t| value is so higher, that coefficient is significant else it is non significant.
+#(Pr < 0.05) ? Reject Null hypotheses. 
+```
+```{r}
+model_summary <- summary(linearModel)
+model_coefficient <- model_summary$coefficients
+beta_estimates <- model_coefficient["speed","Estimate"]
+std.error <- model_coefficient["speed","Std. Error"] 
+t_value <- beta_estimates/std.error
+p_value <- 2 * pt(-abs(t_value),df = nrow(cars) - ncol(cars))
+```
+```{r}
+t_value
+```
+```{r}
+p_value
+```
+```{r}
+f_statistics <- linearModel $ fstatistic[1]
+f_statistics
+f <- summary(linearModel) $ f_statistics
+print(f)
+model_p <- pf(f[1],f[2],f[3],lower = FALSE)
+
+```
+```{r}
+# r^2 = 1 - RSS/TSS (Residual sum or square = (1,2,...n)/Total sum of squares)
+# R Square tells us the proportion of variation in the dependent variable that has been explained by the model. 
+# AIC / MAPE / MAE = ?
+# Adjusted R^2 = 1 - MSE/MST , MSE = RSS/(n - q) is formulated such that it penalises the number of terms/ read - predictors in our model. So unlike R^2 , as the number of predictors in the model increases the adjusted R^2 may not always increase.
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
